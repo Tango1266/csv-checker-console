@@ -17,6 +17,22 @@ fun main(args: Array<String>) {
     val parser = CsvParser(csvPath)
     val csvValidator = CsvValidator(parser = parser)
     val result = csvValidator.perform()
-    println(result)
+    if (result.isNotEmpty())
+        println("""
+            
+          -----------------------------------------------------
+          |                        DONE                       |
+          -----------------------------------------------------
+          ${parser.csvFilePath}: 
+            * ${result.filter { it.severity.equals("ERROR") }.size} errors
+            * ${result.filter { it.severity.equals("WARN") }.size} warnings
+        """.trimIndent())
+
+    if (result.isEmpty())
+        println("""
+        #######################
+          ${parser.csvFilePath.fileName}: seems O.K. 
+        """.trimIndent())
+
 }
 

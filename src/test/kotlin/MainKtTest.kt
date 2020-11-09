@@ -1,4 +1,3 @@
-import model.ValidatorFactory
 import model.*
 import model.utils.CsvParser
 import org.junit.jupiter.api.Assertions.*
@@ -18,6 +17,27 @@ internal class MainKtTest {
     }
 
     @Test
+    fun wordRulesTest () {
+        // word rules
+        //todo: ((?<!\$!)(?<!\$))(?<!\.)(\b\w+)(?=\.\w)
+        var rule = Rule(errMsg = "Expr. starts with # and uses variables without $",
+            patternRegEx = "((?<!\\\$!)(?<!\\\$))(?<!\\.)(\\b\\w+)(?=\\.\\w)",
+            evalCondition = {rule -> rule.evalContext.startsWith("#")},
+            evalMatches = { matches -> matches.count() <= 0 })
+        var result = rule.evaluate(text = "#'\$!object.attr' == 'object.attr' || '\$!object.attr1.attr2' == '\$object.attr1.attr2'")
+        assertTrue(result.isFulfilled)
+
+        // word rules
+        rule = Rule(errMsg = "Value starts with / (constant) but uses variables",
+            patternRegEx = "(?<=\\\$)!?\\b\\w+(?=\\.\\w)",
+            evalCondition = {rule -> rule.evalContext.startsWith("/")},
+            evalMatches = { matches -> matches.count() <= 0 },
+            severity= "WARN")
+        result = rule.evaluate(text = "/constantValue")
+        assertTrue(result.isFulfilled)
+    }
+
+     @Test
     fun integrationTest() {
 
         // row rules
@@ -46,35 +66,6 @@ internal class MainKtTest {
         result = rule.evaluate(text = """invalid_field_value;"some text in double quoates with linebreak
             """)
         assertFalse(result.isFulfilled, rule.errMsg)
-
-
-        // word rules
-        //todo: ((?<!\$!)(?<!\$))(?<!\.)(\b\w+)(?=\.\w)
-        rule = Rule(errMsg = "Expr. starts with # and uses variables without $",
-                patternRegEx = "(?<!\\\$!)(?<!\\\$)\\b\\w+(?=\\.\\w)",
-                evalCondition = {rule -> rule.evalContext.startsWith("#")},
-                evalMatches = { matches -> matches.count() <= 0 })
-        result = rule.evaluate(text = "#'\$!object.attr' == '\$object.attr'")
-        assertTrue(result.isFulfilled)
-
-        // word rules
-        rule = Rule(errMsg = "Value starts with / (constant) but uses variables",
-                patternRegEx = "(?<=\\\$)!?\\b\\w+(?=\\.\\w)",
-                evalCondition = {rule -> rule.evalContext.startsWith("/")},
-                evalMatches = { matches -> matches.count() <= 0 },
-                severity= "WARN")
-        result = rule.evaluate(text = "/constantValue")
-        assertTrue(result.isFulfilled)
-
-
-//        val rules = arrayOf(Rule("",""))
-//        val csvValidator: Validator = CsvValidator("", rules, parser)
-//
-//        val validatorFactory = ValidatorFactory(parser)
-//        val rowValidator: Validator = validatorFactory.createRowValidator()
-//        val cellValidator: Validator = validatorFactory.createCellValidator()
-//
-//        val validationResult: List<RuleResult> = csvValidator.perform()
     }
 }
 
