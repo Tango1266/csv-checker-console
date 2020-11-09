@@ -16,7 +16,7 @@ class ValidatorFactory(val parser: CsvParser) {
     private fun createCellRules(): Array<Rule> {
         return arrayOf(
             Rule(errMsg = "Expr. starts with # and uses variables without $",
-                patternRegEx = "(?<!\\\$!)(?<!\\\$)\\b\\w+(?=\\.\\w)",
+                patternRegEx = "((?<!\\\$!)(?<!\\\$))(?<!\\.)(\\b\\w+)(?=\\.\\w)",
                 evalCondition = { rule -> rule.evalContext.startsWith("#") },
                 evalMatches = { matches -> matches.count() <= 0 }),
             Rule(

@@ -15,8 +15,7 @@ open class CsvValidator(val parser: CsvParser) {
     }
 
     fun perform(): List<RuleResult> {
-        val csvString = parser.readFile().trim()
-        val rows = csvString.lines()
+        val rows = parser.getRows()
         val cells = rows.map {it.split(parser.config.delimiter)}.flatten()
 
         val results = mutableListOf<RuleResult>()
