@@ -49,6 +49,7 @@ internal class MainKtTest {
 
 
         // word rules
+        //todo: ((?<!\$!)(?<!\$))(?<!\.)(\b\w+)(?=\.\w)
         rule = Rule(errMsg = "Expr. starts with # and uses variables without $",
                 patternRegEx = "(?<!\\\$!)(?<!\\\$)\\b\\w+(?=\\.\\w)",
                 evalCondition = {rule -> rule.evalContext.startsWith("#")},
